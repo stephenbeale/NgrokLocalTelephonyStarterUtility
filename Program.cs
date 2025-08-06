@@ -13,7 +13,7 @@ class Program
         "ngrok", "ngrok.exe");
 
         string ngrokDir = Path.GetDirectoryName(ngrokExe);
-        string cmd = $"/K \"cd /d \"{ngrokDir}\" && ngrok.exe start telephony sso\"";
+        string cmd = $"/K \"cd /d \"{ngrokDir}\" && ngrok.exe start email\"";
         Process.Start(new ProcessStartInfo("cmd.exe", cmd) { UseShellExecute = true });
 
         // 2. Prompt user to paste the Forwarding URLs after they appear in ngrok output
