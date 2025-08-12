@@ -53,14 +53,16 @@ class Program
             }
             if (ssoUrl == null)
             {
-                var m = Regex.Match(line, @"Forwarding\s+(tcp://\S+)");
+                var m = Regex.Match(line, @"Forwarding\s+(http://\S+)");
                 if (m.Success) ssoUrl = m.Groups[1].Value;
             }
         }
 
+        string bothUrls = "both";
+
         if (telephonyUrl == null || ssoUrl == null)
         {
-            Console.WriteLine("Could not find both required ngrok Forwarding URLs.");
+            Console.WriteLine($"Could not find required Forwarding URL for {(string.IsNullOrEmpty(telephonyUrl) ? "telephonyUrl" : (string.IsNullOrEmpty(ssoUrl) ? ssoUrl : bothUrls))}. Please check and run this again");
             return;
         }
 
