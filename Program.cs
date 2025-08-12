@@ -11,9 +11,29 @@ class Program
         string ngrokExe = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
         "ngrok", "ngrok.exe");
-
         string ngrokDir = Path.GetDirectoryName(ngrokExe);
-        string cmd = $"/K \"cd /d \"{ngrokDir}\" && ngrok.exe start email\"";
+
+        Console.WriteLine("Choose your service: 1 for Telephony, 2 for Email:");
+        var service = Console.ReadLine();
+
+        string ngrokServiceCommands = string.Empty;
+
+        switch (service)
+        {
+            case "1":
+                Console.WriteLine("Telephony service selected");
+                ngrokServiceCommands = "start telephony sso";
+                break;
+            case "2":
+                Console.WriteLine("Email service selected");
+                ngrokServiceCommands = "start email";
+                break;
+            default:
+                Console.WriteLine("Invalid selection. Please choose 1 or 2.");
+                break;
+        }
+
+        string cmd = $"/K \"cd /d \"{ngrokDir}\" && ngrok.exe {ngrokServiceCommands} \"";
         Process.Start(new ProcessStartInfo("cmd.exe", cmd) { UseShellExecute = true });
 
         // 2. Prompt user to paste the Forwarding URLs after they appear in ngrok output
