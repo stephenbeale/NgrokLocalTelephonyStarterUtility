@@ -15,6 +15,16 @@ class Program
         string cmd = $"/K \"cd /d \"{ngrokDir}\" && ngrok.exe start email\"";
         Process.Start(new ProcessStartInfo("cmd.exe", cmd) { UseShellExecute = true });
 
+        string choice = string.Empty;
+        do {
+            //2. Choose service
+            Console.WriteLine("Choose your desired service: 1 for email, 2 for telephony");
+            choice = Console.ReadLine();
+        } while (choice != "1" && choice != "2");
+
+        string service = choice == "2" ? "telephony" : "email";
+        Console.WriteLine($"Your chosen service: {service}");
+
         // 2. Prompt user to paste the Forwarding URLs after they appear in ngrok output
         Console.WriteLine("\nPaste the ngrok Forwarding URL lines here (then press Enter twice):");
         string input, allInput = "";
@@ -32,14 +42,14 @@ class Program
             }
             if (ssoUrl == null)
             {
-                var m = Regex.Match(line, @"Forwarding\s+(tcp://\S+)");
+                var m = Regex.Match(line, @"Web Interface\s+(http://\S+)");
                 if (m.Success) ssoUrl = m.Groups[1].Value;
             }
         }
 
         if (chosenServiceUrl == null)
         {
-            Console.WriteLine("Could not find ngrok Forwarding URL for your chosen service (e.g. email or telephony).");
+            Console.WriteLine($"Could not find ngrok Forwarding URL for your chosen service {service}");
             return;
         }
         if (ssoUrl == null)
@@ -76,6 +86,7 @@ class Program
         // 5. Open in browser
         Process.Start(new ProcessStartInfo(chosenServiceApiUrl) { UseShellExecute = true });
         Process.Start(new ProcessStartInfo(ssoApiUrl) { UseShellExecute = true });
+        Process.Start(new ProcessStartInfo("http://localhost:4040/") { UseShellExecute = true });
 
         // Open http://sso-local.wf-lmx.com/ in an incognito Chrome window
         Process.Start(new ProcessStartInfo
