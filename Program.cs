@@ -90,5 +90,37 @@ class Program
                 UseShellExecute = true
             });
         }
+
+        if(service.Contains("email"))
+        {
+            Console.WriteLine("\n\nEmail Sending Service - Enter the info to create and send a test email to your chosen task/lead.");
+
+            // Using Process.Start with mailto URL
+            string recipientBaseAddress = "@mail-local.wf-lmx.com";
+
+            int productChoice;
+            do
+            {
+                Console.WriteLine("Select a product: 1 = FE-CS, 2 = HZ-CS");
+            } while (!int.TryParse(Console.ReadLine(), out productChoice) || (productChoice != 1 && productChoice != 2));
+
+            int leadId;
+            do
+            {
+                Console.WriteLine("Enter Lead ID:");
+            } while (!int.TryParse(Console.ReadLine(), out leadId));
+
+            string recipient = $"{(productChoice == 1 ? "FE-CS" : "HZ-CS")}+{leadId}+{recipientBaseAddress}";
+
+            string subject = "Test Subject";
+            string body = "This is the email body text.";
+
+            // URL encode the subject and body
+            string mailtoUrl = $"mailto:{recipient}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
+
+            Console.WriteLine($"Creating email with following contents: \n{mailtoUrl}");
+
+            Process.Start(new ProcessStartInfo(mailtoUrl) { UseShellExecute = true });
+        }
     }
 }
