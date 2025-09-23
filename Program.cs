@@ -88,12 +88,19 @@ class Program
         Process.Start(new ProcessStartInfo(ssoApiUrl) { UseShellExecute = true });
         Process.Start(new ProcessStartInfo("http://localhost:4040/") { UseShellExecute = true });
 
-        // Open http://sso-local.wf-lmx.com/ in an incognito Chrome window
-        Process.Start(new ProcessStartInfo
+        // Open http://localhost:8081/ in default browser
+        Process.Start(new ProcessStartInfo("http://localhost:8081/") { UseShellExecute = true });
+
+        if (service.Contains("telephony"))
         {
-            FileName = "chrome",
-            Arguments = "--incognito http://sso-local.wf-lmx.com/",
-            UseShellExecute = true
-        });
+
+            // Open http://sso-local.wf-lmx.com/ in an incognito Chrome window
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "chrome",
+                Arguments = "--incognito http://sso-local.wf-lmx.com/",
+                UseShellExecute = true
+            });
+        }
     }
 }
