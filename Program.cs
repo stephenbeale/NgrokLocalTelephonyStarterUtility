@@ -26,8 +26,9 @@ class Program
         Console.WriteLine($"Your chosen service: {service}");
 
         // 2. Prompt user to paste the Forwarding URLs after they appear in ngrok output
+        string input = string.Empty;
         Console.WriteLine("\nPaste the ngrok Forwarding URL lines here (then press Enter twice):");
-        string input, allInput = "";
+        string allInput = "";
         while (!string.IsNullOrWhiteSpace(input = Console.ReadLine()))
             allInput += input + "\n";
 
@@ -35,12 +36,14 @@ class Program
         string chosenServiceUrl = null, ssoUrl = null;
         foreach (var line in allInput.Split('\n'))
         {
-            if (chosenServiceUrl == null)
+            if (chosenServiceUrl != null) continue;
+            else
             {
-                var m = Regex.Match(line, @"Forwarding\s+(https://\S+\.ngrok-free\.app)");
+                var m = Regex.Match(line, @"Forwarding\s+(https://\S+\.ngrok-free.app)");
                 if (m.Success) chosenServiceUrl = m.Groups[1].Value;
             }
-            if (ssoUrl == null)
+            if (ssoUrl != null) continue;
+            else
             {
                 var m = Regex.Match(line, @"Web Interface\s+(http://\S+)");
                 if (m.Success) ssoUrl = m.Groups[1].Value;
@@ -59,25 +62,13 @@ class Program
         }
 
         // 4. Encode and build API URLs
-        string chosenServiceApiUrl;
+        string chosenServiceApiUrl = string.Empty;
         string ssoApiUrl = $"https://selfservice.wf-lmx.com/sso?urlEncoded={Uri.EscapeDataString(ssoUrl)}";
-
-        // Determine service type and build appropriate API URL
-        if (chosenServiceUrl.Contains("email") || chosenServiceUrl.Contains("8080"))
+        if(service == "telephony" || service == "email")
         {
-            chosenServiceApiUrl = $"https://selfservice.wf-lmx.com/email?urlEncoded={Uri.EscapeDataString(chosenServiceUrl)}";
-            Console.WriteLine("Detected service type: Email");
-        }
-        else if (chosenServiceUrl.Contains("telephony") || chosenServiceUrl.Contains("8081"))
-        {
-            chosenServiceApiUrl = $"https://selfservice.wf-lmx.com/telephony?urlEncoded={Uri.EscapeDataString(chosenServiceUrl)}";
-            Console.WriteLine("Detected service type: Telephony");
-        }
-        else
-        {
-            // Default to email since we started ngrok with "email"
-            chosenServiceApiUrl = $"https://selfservice.wf-lmx.com/email?urlEncoded={Uri.EscapeDataString(chosenServiceUrl)}";
-            Console.WriteLine("Service type not detected, defaulting to Email");
+            // Determine service type and build appropriate API URL
+            chosenServiceApiUrl = $"https://selfservice.wf-lmx.com/{service}?urlEncoded={Uri.EscapeDataString(chosenServiceUrl)}";
+            Console.WriteLine($"Detected service type: {service}");
         }
 
         Console.WriteLine($"\nChosen Service API URL: {chosenServiceApiUrl}");
@@ -86,14 +77,11 @@ class Program
         // 5. Open in browser
         Process.Start(new ProcessStartInfo(chosenServiceApiUrl) { UseShellExecute = true });
         Process.Start(new ProcessStartInfo(ssoApiUrl) { UseShellExecute = true });
+        //Debugging: Open ngrok web interface
         Process.Start(new ProcessStartInfo("http://localhost:4040/") { UseShellExecute = true });
-
-        // Open http://localhost:8081/ in default browser
-        Process.Start(new ProcessStartInfo("http://localhost:8081/") { UseShellExecute = true });
 
         if (service.Contains("telephony"))
         {
-
             // Open http://sso-local.wf-lmx.com/ in an incognito Chrome window
             Process.Start(new ProcessStartInfo
             {
