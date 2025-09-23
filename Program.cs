@@ -95,32 +95,48 @@ class Program
         {
             Console.WriteLine("\n\nEmail Sending Service - Enter the info to create and send a test email to your chosen task/lead.");
 
-            // Using Process.Start with mailto URL
             string recipientBaseAddress = "@mail-local.wf-lmx.com";
 
             int productChoice;
+
+            bool continueLoop = true;
+
             do
             {
-                Console.WriteLine("Select a product: 1 = FE-CS, 2 = HZ-CS");
-            } while (!int.TryParse(Console.ReadLine(), out productChoice) || (productChoice != 1 && productChoice != 2));
+                do
+                {
+                    Console.WriteLine("Select a product: 1 = FE-CS, 2 = HZ-CS");
+                } while (!int.TryParse(Console.ReadLine(), out productChoice) || (productChoice != 1 && productChoice != 2));
 
-            int leadId;
-            do
-            {
-                Console.WriteLine("Enter Lead ID:");
-            } while (!int.TryParse(Console.ReadLine(), out leadId));
+                int leadId;
+                string leadInput;
+                do
+                {
+                    Console.WriteLine("Enter Lead ID (or paste URL):");
+                    leadInput = Console.ReadLine();
+                    var match = Regex.Match(leadInput, @"(\d+)$");
+                    if (match.Success)
+                    {
+                        leadInput = match.Groups[1].Value; // Extract just the numbers
+                    }
+                } while (!int.TryParse(leadInput, out leadId));
 
-            string recipient = $"{(productChoice == 1 ? "FE-CS" : "HZ-CS")}+{leadId}+{recipientBaseAddress}";
+                string recipient = $"{(productChoice == 1 ? "FE-CS" : "HZ-CS")}+{leadId}{recipientBaseAddress}";
 
-            string subject = "Test Subject";
-            string body = "This is the email body text.";
+                string subject = "Test Subject";
+                string body = "This is the email body text.";
 
-            // URL encode the subject and body
-            string mailtoUrl = $"mailto:{recipient}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
+                // URL encode the subject and body
+                string mailtoUrl = $"mailto:{recipient}?subject={Uri.EscapeDataString(subject)}&body={Uri.EscapeDataString(body)}";
 
-            Console.WriteLine($"Creating email with following contents: \n{mailtoUrl}");
+                Console.WriteLine($"Creating email with following contents: \n{mailtoUrl}");
 
-            Process.Start(new ProcessStartInfo(mailtoUrl) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(mailtoUrl) { UseShellExecute = true });
+
+                Console.WriteLine("\n\n\nDo you want to create another email? (y/n)");
+                continueLoop = Console.ReadLine()?.Trim().ToLower() == "y";
+
+            } while (continueLoop);
         }
     }
 }
