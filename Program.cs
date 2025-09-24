@@ -121,6 +121,8 @@ class Program
             Console.WriteLine($"\nEmail API URL: {emailApiUrl}");
             Process.Start(new ProcessStartInfo(emailApiUrl) { UseShellExecute = true });
 
+            Process.Start(new ProcessStartInfo("http://localhost:4040/inspect/http") { UseShellExecute = true });
+
             string recipientBaseAddress = "@mail-local.wf-lmx.com";
 
             int productChoice;
@@ -169,10 +171,6 @@ class Program
             } while (continueLoop);
 
         }
-
-        Process.Start(new ProcessStartInfo("http://localhost:4040/inspect/http") { UseShellExecute = true });
-
-
 
         Console.WriteLine("\nPress any key to exit...");
         Console.ReadKey();
